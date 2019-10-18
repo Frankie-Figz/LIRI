@@ -14,13 +14,26 @@
   // fs is a core Node package for reading and writing files
   var fs = require("fs");
 
+  function writeFile(data){
+    fs.writeFile("randomOutput.txt", data, function(err) {
+
+      // If the code experiences any errors it will log the error to the console.
+      if (err) {
+        return console.log(err);
+      }
+    
+      // Otherwise, it will print: "movies.txt was updated!"
+      console.log("randomOutput.txt was updated!");
+    });    
+  }
+
   // Create a "Prompt" with a series of questions.
   function startPrompt(){
     inquirer.prompt([
       // Here are the possible LIRI options.
       {
         type: "list",
-        message: "Which Pokemon do you choose?",
+        message: "Which action do you choose?",
         choices: ["concert-this", "spotify-this-song", "movie-this","do-what-it-says"],
         name: "choice"
       }
@@ -51,11 +64,10 @@
     var queryMovie = movie;
     var userQuery = "http://www.omdbapi.com/?apikey=trilogy&t=" + queryMovie;
                 
-    // Optionally the request above could also be done as
+    // Optionally the request above could also be done
     axios.get(userQuery).then(function (response) {
 
-    console.log(response);
-                
+    // If the response is not False then it means a movie has been found. Else, no has been found.                
     if(response.data.Response !== 'False'){
       console.log("Title of the movie is : " + response.data.Title);
       console.log("Year the movie came out : " + response.data.Year);
@@ -65,6 +77,9 @@
       console.log("Language of the movie : " + response.data.Language);
       console.log("Plot of the movie : " + response.data.Plot);
       console.log("Actors in the movie : " + response.data.Actors);}
+    else{
+      console.log("Movie has not been found !");
+    }
     }).catch(function (error) {
       console.log(error);
       })
@@ -75,48 +90,55 @@
 
   function workMusic(songTitle){
     var response = songTitle;
-    var userQuery = response.song.replace(/\s/g,'+').toLowerCase();
-    console.log(userQuery);
-      
-    spotify.search({type: 'track', query: userQuery}, function(err, data) {
-
-      if (err) {
-            return console.log('Error occurred: ' + err);
-          }
-          for (var i = 0; i < data.tracks.items.length; i++){
-            for (var j = 0; j < data.tracks.items[i].album.length; i++){
-              console.log("Artist[s]: " + data.tracks.items[i].album.artists[j]);
-            }
-            
+    var userQuery = response.replace(/\s/g,'+').toLowerCase();      
+    if(songTitle !== ""){
+      spotify.search({type: 'track', query: userQuery}, function(err, data) {
+        if (err)
+          return console.log('Error occurred: ' + err);
+        else if(data.tracks.items == 0)
+          console.log("No song found with that name !");
+        else{  
+          for (var i in data.tracks.items){
+            console.log("Name of Artist : " + data.tracks.items[i].album.artists[0].name);
+            console.log("Name of Track : " + data.tracks.items[i].name);              
             console.log("Link to Spotify preview: " + data.tracks.items[i].album.href);
-            console.log("");
-            console.log("-----------------------------------------------------");
+            console.log("Name of Album : " + data.tracks.items[i].album.name);              
+            console.log("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
           }
-        });
+        }
+      });
+    } else {
+      console.log("Please a string that is not empty !");
+    }
+
+
+
   };
 
+  // @author: Emma Stotz :: The workEvent function was taken from this repository = https://github.com/emmastotz/gari-node-app
+  // The method takes in a band name and queries the bands in town API to look for all valid events.
+  // If the band has no valid events in town then it will console log that no concerts where found.
+  // @fixed: Changed the if-conditional to response.data.length !== 0 in order to make the else statement operate correctly
   function workEvent(bandName){
-
     var response = bandName;
     var artistQuery = response.replace(/\s/g,'+').toLowerCase();
     var userQuery = "https://rest.bandsintown.com/artists/" + artistQuery + "/events?app_id=codingbootcamp";
   
-      axios.get(userQuery)
+    axios.get(userQuery)
       .then(function(response) {
-        if (response.data !== '[]') {
+        if (response.data.length !== 0) {
           for (var i = 0; i < response.data.length; i++){
             console.log("Venue: " + response.data[i].venue.name); 
             console.log("Location: " + response.data[i].venue.city + ", " + response.data[i].venue.region + ", " + response.data[i].venue.country);
             var date = moment(response.data[i].datetime).format('MM/DD/YYYY');
             console.log("Date: " + date);        
-            console.log("-----------------------------------------------------");
+            console.log("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
           }
         }
         else {
           console.log('No concerts found. Try again.');
         }
       });  
-
   };
   
   function movieSearch(p){
@@ -169,24 +191,17 @@
   };
 
   function doThis(){
-        // This block of code will read from the "movies.txt" file.
-        // It's important to include the "utf8" parameter or the code will provide stream data (garbage)
-        // The code will store the contents of the reading inside the variable "data"
+    // This block of code will read from the "movies.txt" file.
+    // It's important to include the "utf8" parameter or the code will provide stream data (garbage).
+    // The code will store the contents of the reading inside the variable "data".
     
     fs.readFile("random.txt", "utf8", function(error, data) {
         // If the code experiences any errors it will log the error to the console.
       if (error) 
         return console.log(error);
-
-      // We will then print the contents of data
-      console.log(data);
-    
+        
       // Then split it by commas (to make it more readable)
       var dataArr = data.split(",");
-    
-      // We will then re-display the content as an array for later use.
-      console.log(dataArr[0]);
-      console.log(dataArr[1]);
 
       switch(dataArr[0])
       {
