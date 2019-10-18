@@ -12,11 +12,13 @@ The permissible functions for the LIRI CLI are the following :
 </ul>
 
 # Functionality
+Documentation of the functionality can be found here :
+<a href="https://drive.google.com/open?id=1IcBQv2dbP0MCgmllVlVkqowVFKBxmyzY "> PDF</a>
 
 ## Spotify-this
   The spotify-this function takes in a string from the user and outputs songs (and their attributes) that contain that string in it's song title. <br>
   The search returns <strong> ALL </strong> artists that have the searched for string appearing in it's title. The attributes displayed of the search are :
- 
+
  <ul>
   <li> Name of Artist </li>
   <li> Name of Track </li>
@@ -49,7 +51,9 @@ The permissible functions for the LIRI CLI are the following :
  For example, if you were to have "movie-this,jaws" in the text file then the movie-this function would be executed with the string of "jaws".
 
 # Technology Stack
+The main language of this project is Javascript.
 
+The Node libraries used for this project are the following.
 <ul>
   <li> Axios </li>
     A library used to query APIs.
